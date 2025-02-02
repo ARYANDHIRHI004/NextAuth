@@ -18,26 +18,26 @@ export async function POST(req:NextRequest){
 
         const getPassword = await bcryptjs.compare(password, user.password)
 
-        const token = jwt.sign(
+        const token = await jwt.sign(
             {
                 id: user._id,
-                username: user.username
-            }, process.env.TOKEN_SECRET!,
+                username: user.username,
+                email: user.email
+            }, 
+            process.env.TOKEN_SECRET!,
             {
-                expiresIn: process.env.TOKEN_SECRET_EXPIRY!
+                expiresIn: "1d"
             }
         )
 
-        return NextResponse.json({
-            message: "User created successfully",
+        const response =  NextResponse.json({
+            message: "User logedin successfully",
             success: true,
         })
-        .cookies.set("token", token, {httpOnly: true, path: "/"})
+        response.cookies.set("token", token, {httpOnly: true})
 
-
-
-
-
+        return response
+        
 
     } catch (error:any) {
         return NextResponse.json({error: error.message}, {status:500})

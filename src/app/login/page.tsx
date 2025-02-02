@@ -2,17 +2,27 @@
 
 import Link from "next/link";
 import React, { useState } from "react";
-import { useRouter } from "next/router";
-import { axios } from "axios";
+import { useRouter } from "next/navigation";
+import axios  from "axios";
 
 const LoginPage = () => {
+  const router = useRouter()
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
+  const [buttonDisabled, setButtonDisabled] = useState(false)
 
-  const onLogin = () => {
-    
+  const onLogin = async () => {
+    try {
+
+      const response = await axios.post("/api/users/login", user);
+      router.push("/profile");  
+
+    } catch (error: any) {
+      console.log("login failed");
+
+    } 
   }
   
   return (
@@ -38,10 +48,10 @@ const LoginPage = () => {
           <input id="password" value={user.password} 
           onChange={(e)=>setUser({...user, password:e.target.value})}  className="p-3" type="text" placeholder="Password" />
         </div>
-        <button
-        onClick={onLogin}>Sign Up</button>
-        <Link href="/signup">Visit Signup page</Link>
+      <Link href="/signup">Visit Signup page</Link>
       </div>
+        <button 
+        onClick={onLogin}>Login</button>
     </div>
   );
 }
